@@ -1,0 +1,68 @@
+# HollywoodOS Configuration
+
+# Global layout settings
+layout:
+  type: "auto"          # "auto", "manual", or "grid"
+  grid_columns: 3
+  grid_rows: 3
+  padding: 1
+  gutter: 1
+
+# Default settings for all plugins
+defaults:
+  refresh_rate: 0.3     # seconds
+  color: "green"
+  background: "black"
+  font_size: "normal"   # "small", "normal", "large"
+  border: true
+  border_color: "gray"
+  random_generation: true
+  source_file: null
+  height: 5
+
+# Plugin type defaults (override global defaults)
+plugin_defaults:
+  HexScroll:
+    refresh_rate: 0.2
+    lines_count: 8
+  NetworkMonitor:
+    refresh_rate: 1.0
+    color: "cyan"
+  SystemLoad:
+    refresh_rate: 2.0
+    color: "yellow"
+
+# Window configurations
+windows:
+  - id: "main-hex"
+    position: [0, 0]        # grid position (optional for auto layout)
+    size: [1, 1]            # grid span (optional)
+    cycle_interval: 0       # seconds between plugin cycling (0 = no cycling)
+    plugins:
+      - type: "HexScroll"
+        config:
+          refresh_rate: 0.1
+          lines_count: 10
+          color: "lime"
+
+  - id: "cycling-window"
+    position: [1, 0]
+    cycle_interval: 5.0
+    plugins:
+      - type: "HexScroll"
+        config:
+          color: "red"
+          lines_count: 6
+      - type: "NetworkMonitor"
+        config:
+          interface: "eth0"
+          color: "cyan"
+
+  - id: "static-data"
+    position: [2, 0]
+    plugins:
+      - type: "HexScroll"
+        config:
+          source_file: "data/hex_dump.txt"
+          random_generation: false
+          refresh_rate: 0.5
