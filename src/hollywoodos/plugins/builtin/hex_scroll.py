@@ -28,7 +28,10 @@ class HexScrollWidget(Static):
         """Start scrolling when mounted"""
         # Calculate how many lines we can fit
         self.line_count = self.size.height
-        self.column_count = min(self.config.get('columns', 16), self.size.width // 3)
+        # Each hex value takes 3 characters (2 hex + 1 space), but last doesn't need space
+        # So for width W, we can fit (W + 1) / 3 values
+        max_columns = (self.size.width + 1) // 3
+        self.column_count = max_columns if max_columns > 0 else 1
         
         # Initialize with random data
         self.lines = [self._generate_hex_line() for _ in range(self.line_count)]

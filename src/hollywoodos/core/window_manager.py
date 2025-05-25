@@ -61,35 +61,9 @@ class WindowManager(Container):
             self.mount(tile)
             return
             
-        # For multiple windows, split recursively
-        mid = len(window_configs) // 2
-        left_configs = window_configs[:mid]
-        right_configs = window_configs[mid:]
-        
-        # Determine split direction based on aspect ratio
-        # This is a simple heuristic - could be improved
-        split_horizontal = len(window_configs) <= 2
-        
-        if split_horizontal:
-            # Create horizontal split
-            left_container = Container()
-            right_container = Container()
-            
-            left_container.styles.width = "50%"
-            left_container.styles.height = "100%"
-            left_container.styles.dock = "left"
-            
-            right_container.styles.width = "50%"
-            right_container.styles.height = "100%"
-            right_container.styles.dock = "right"
-            
-            self.mount(left_container, right_container)
-            
-            # Recursively create tiles in containers
-            self._create_tiles_in_container(left_container, left_configs)
-            self._create_tiles_in_container(right_container, right_configs)
-        else:
-            # Create vertical split
+        # For 4 windows, create a 2x2 grid
+        if len(window_configs) == 4:
+            # Create top and bottom containers
             top_container = Container()
             bottom_container = Container()
             
@@ -103,7 +77,49 @@ class WindowManager(Container):
             
             self.mount(top_container, bottom_container)
             
-            # Recursively create tiles in containers
+            # Split each container horizontally
+            self._create_tiles_in_container(top_container, window_configs[:2])
+            self._create_tiles_in_container(bottom_container, window_configs[2:])
+            return
+            
+        # For other cases, split recursively
+        mid = len(window_configs) // 2
+        left_configs = window_configs[:mid]
+        right_configs = window_configs[mid:]
+        
+        # For 2 windows, split vertically (side by side)
+        # Since characters are twice as tall as wide, vertical split is preferred
+        if len(window_configs) == 2:
+            left_container = Container()
+            right_container = Container()
+            
+            left_container.styles.width = "50%"
+            left_container.styles.height = "100%"
+            left_container.styles.dock = "left"
+            
+            right_container.styles.width = "50%"
+            right_container.styles.height = "100%"
+            right_container.styles.dock = "right"
+            
+            self.mount(left_container, right_container)
+            
+            self._create_tiles_in_container(left_container, left_configs)
+            self._create_tiles_in_container(right_container, right_configs)
+        else:
+            # For odd numbers or > 4, use balanced splitting
+            top_container = Container()
+            bottom_container = Container()
+            
+            top_container.styles.width = "100%"
+            top_container.styles.height = "50%"
+            top_container.styles.dock = "top"
+            
+            bottom_container.styles.width = "100%"
+            bottom_container.styles.height = "50%"
+            bottom_container.styles.dock = "bottom"
+            
+            self.mount(top_container, bottom_container)
+            
             self._create_tiles_in_container(top_container, left_configs)
             self._create_tiles_in_container(bottom_container, right_configs)
             
