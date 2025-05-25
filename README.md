@@ -1,26 +1,49 @@
 # HollywoodOS
 
-HollywoodOS is a terminal-based application that simulates cinematic computer activity, similar to what you see in movies. It is built using the Textual framework and supports a plugin system for user-defined display modules.
-
-## Overview
-
-HollywoodOS is not meant to do anything useful. It is designed to look impressive by showing scrolling text, telemetry tables, hex dumps, and other fake "high-tech" content in tiled windows. Each tile is rendered by a plugin conforming to a simple interface.
+A retro-inspired terminal-based operating system simulation built with Textual and Python.
 
 ## Features
 
-- Grid-based terminal layout using Textual
-- Pluggable architecture
-- Plugin system using regular Python files or modules
-- Easy to customize or extend with your own visualizations
+- Modular plugin system: extend functionality with built-in and third-party plugins such as System Monitor and Log Scroller.
+- Themed interface: customizable color schemes and layouts defined in a CSS-like DSL.
+- Configurable: settings loaded from `config.yaml` and override via environment variables.
+- Cross-platform: tested on Windows, macOS, and Linux.
 
-## Requirements
+## Installation
 
-- Python 3.11 or later
-- A terminal that supports Textual
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/thraal/hollywoodos.git
+   cd hollywoodos
+   ```
+2. Create a virtual environment:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate   # Linux
+   .venv\Scripts\activate     # Windows
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-## License
+## Quick Start
 
-HollywoodOS is licensed under the GNU Affero General Public License v3.0.
+Run the application from the project root:
+```bash
+python run.py
+```
 
-You can use, modify, and redistribute it under the terms of that license.
-See the LICENSE file for the full license text.
+Refer to the Running guide for advanced options and troubleshooting.
+
+## Project Structure
+
+```
+hollywoodos/
+├── src/hollywoodos/     # Application source code
+├── docs/                # Documentation: usage, architecture, plugins
+├── README.md
+├── RUNNING.md           # Running instructions and flags
+├── requirements.txt
+└── config.yaml.example
+```

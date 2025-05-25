@@ -11,7 +11,7 @@ from .plugins.registry import PluginRegistry
 class HollywoodOS(App):
     CSS = """
     WindowManager {
-        dock: fill;
+        dock: none;
     }
     
     TileWindow {
