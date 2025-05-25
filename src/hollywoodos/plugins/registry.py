@@ -1,9 +1,10 @@
 # plugin_registry.py
 import importlib
+import importlib.util
 import inspect
 from pathlib import Path
-from typing import Dict, Type, Optional
-from src.hollywoodos.plugins.base import BlinkenPlugin
+from typing import Dict, Type, Optional, List
+from .base import BlinkenPlugin
 
 class PluginRegistry:
     """Central registry for all available plugins"""
@@ -29,15 +30,17 @@ class PluginRegistry:
         """Register built-in plugins"""
         # Import built-in plugins
         try:
-            from src.hollywoodos.plugins.builtin.hex_scroll import HexScroll
-            from src.hollywoodos.plugins.builtin.matrix_rain import MatrixRain
-            from src.hollywoodos.plugins.builtin.system_monitor import SystemMonitor
-            from src.hollywoodos.plugins.builtin.log_scroll import LogScroll
+            from .builtin.hex_scroll import HexScroll
+            from .builtin.matrix_rain import MatrixRain
+            from .builtin.system_monitor import SystemMonitor
+            from .builtin.log_scroll import LogScroll
+            from .builtin.network_monitor import NetworkMonitor
             
             self.register("HexScroll", HexScroll)
             self.register("MatrixRain", MatrixRain)
             self.register("SystemMonitor", SystemMonitor)
             self.register("LogScroll", LogScroll)
+            self.register("NetworkMonitor", NetworkMonitor)
         except ImportError:
             pass
             

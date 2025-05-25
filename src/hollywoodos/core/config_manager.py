@@ -27,7 +27,7 @@ class LayoutConfig:
     unfocus_color: str = "$surface-lighten-1"
 
 class ConfigManager:
-    def __init__(self, config_path: str = "config.yaml"):
+    def __init__(self, config_path: str = "config/default.yaml"):
         self.config_path = Path(config_path)
         self._config = {}
         self._layout = LayoutConfig()
@@ -39,7 +39,19 @@ class ConfigManager:
     def load(self):
         """Load configuration from file"""
         if not self.config_path.exists():
-            self._create_default_config()
+            # Try alternative paths
+            alt_paths = [
+                Path("config.yaml"),
+                Path("config") / "default.yaml",
+                Path.cwd() / "config" / "default.yaml",
+            ]
+            
+            for path in alt_paths:
+                if path.exists():
+                    self.config_path = path
+                    break
+            else:
+                self._create_default_config()
         
         try:
             with open(self.config_path, 'r') as f:
@@ -153,6 +165,9 @@ class ConfigManager:
                 }
             ]
         }
+        
+        # Create config directory if it doesn't exist
+        self.config_path.parent.mkdir(parents=True, exist_ok=True)
         
         with open(self.config_path, 'w') as f:
             yaml.dump(default, f, default_flow_style=False, indent=2)

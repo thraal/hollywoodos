@@ -1,7 +1,9 @@
 # plugins/matrix_rain.py
 from textual.widgets import Static
 from textual.reactive import reactive
-from src.hollywoodos.plugins.base import BlinkenPlugin
+from textual.widget import Widget
+from typing import Dict, Any, List
+from ..base import BlinkenPlugin
 import random
 import math
 

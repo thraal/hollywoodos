@@ -1,6 +1,8 @@
 # plugins/system_monitor.py
 from textual.widgets import Static
-from src.hollywoodos.plugins.base import BlinkenPlugin
+from textual.widget import Widget
+from typing import Dict, Any
+from ..base import BlinkenPlugin
 import random
 import time
 

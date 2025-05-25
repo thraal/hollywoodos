@@ -4,9 +4,9 @@ from textual.containers import Container
 from textual.widgets import Header, Footer
 from textual.binding import Binding
 from textual.geometry import Size
-from src.hollywoodos.core.config_manager import ConfigManager
-from src.hollywoodos.core.window_manager import WindowManager
-from src.hollywoodos.plugins.registry import PluginRegistry
+from .core.config_manager import ConfigManager
+from .core.window_manager import WindowManager
+from .plugins.registry import PluginRegistry
 
 class HollywoodOS(App):
     CSS = """

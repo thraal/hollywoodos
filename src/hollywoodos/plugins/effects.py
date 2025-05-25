@@ -3,6 +3,7 @@ from typing import Dict, Any, List, Callable
 from textual.timer import Timer
 import random
 import time
+import math
 
 class EffectRegistry:
     """Registry for shared visual effects"""

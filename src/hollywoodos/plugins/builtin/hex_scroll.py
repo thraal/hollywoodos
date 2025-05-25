@@ -1,8 +1,10 @@
 # plugins/hex_scroll.py
 from textual.widgets import Static
 from textual.reactive import reactive
-from src.hollywoodos.plugins.base import BlinkenPlugin
-from src.hollywoodos.plugins.effects import EffectRegistry
+from textual.widget import Widget
+from typing import Dict, Any, List
+from ..base import BlinkenPlugin
+from ..effects import EffectRegistry
 import random
 import math
 

@@ -1,5 +1,5 @@
-# src/hollywoodos/core/__init__.py (minimal version)
+# src/hollywoodos/core/__init__.py
 """Core components for HollywoodOS."""
 
-# Just mark as package, no imports
-# Users would import like: from hollywoodos.core.config_manager import ConfigManager
+# This file can remain empty as it just marks the directory as a package
+# Users will import specific modules as needed

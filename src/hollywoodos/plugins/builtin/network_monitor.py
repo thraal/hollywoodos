@@ -1,13 +1,15 @@
+# plugins/network_monitor.py
 from textual.widget import Widget
 from textual.reactive import reactive
-from src.hollywoodos.plugins.base import BlinkenPlugin
+from typing import Dict, Any
+from ..base import BlinkenPlugin
 import random
 import time
 
 class NetworkDisplay(Widget):
     content = reactive("")
 
-    def __init__(self, config, **kwargs):
+    def __init__(self, config: Dict[str, Any], **kwargs):
         super().__init__(**kwargs)
         self.config = config
         self.interface = config.get('interface', 'eth0')
@@ -16,6 +18,7 @@ class NetworkDisplay(Widget):
     def on_mount(self):
         refresh_rate = self.config.get('refresh_rate', 1.0)
         self.set_interval(refresh_rate, self.update_stats)
+        self.update_stats()  # Initial update
 
     def update_stats(self):
         """Generate fake network statistics"""
@@ -38,7 +41,7 @@ Status: CONNECTED"""
         return self.content
 
 class NetworkMonitor(BlinkenPlugin):
-    def create_widget(self):
+    def create_widget(self) -> Widget:
         return NetworkDisplay(
             config=self.config,
             id=f"network-monitor-{id(self)}"

@@ -2,9 +2,9 @@
 from textual.containers import Container
 from textual.widget import Widget
 from typing import Optional, List
-from src.hollywoodos.core.config_manager import ConfigManager, WindowConfig, PluginConfig
-from src.hollywoodos.plugins.registry import PluginRegistry
-from src.hollywoodos.plugins.base import BlinkenPlugin
+from ..core.config_manager import ConfigManager, WindowConfig, PluginConfig
+from ..plugins.registry import PluginRegistry
+from ..plugins.base import BlinkenPlugin
 import random
 
 class TileWindow(Container):
