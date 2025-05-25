@@ -1,6 +1,6 @@
 from textual.widget import Widget
 from textual.reactive import reactive
-from plugin_interface import BlinkenPlugin
+from src.hollywoodos.plugins.base import BlinkenPlugin
 import random
 import time
 

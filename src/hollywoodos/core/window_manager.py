@@ -4,9 +4,9 @@ from textual.containers import Container
 from textual.reactive import reactive
 from textual.geometry import Size, Region
 from typing import Optional, List
-from tile_window import TileWindow
-from config_manager import ConfigManager, WindowConfig
-from plugin_registry import PluginRegistry
+from src.hollywoodos.core.tile_window import TileWindow
+from src.hollywoodos.core.config_manager import ConfigManager, WindowConfig
+from src.hollywoodos.plugins.registry import PluginRegistry
 
 class WindowManager(Container):
     """Manages tiled windows with smart splitting algorithm"""

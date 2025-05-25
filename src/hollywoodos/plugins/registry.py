@@ -3,7 +3,7 @@ import importlib
 import inspect
 from pathlib import Path
 from typing import Dict, Type, Optional
-from plugin_interface import BlinkenPlugin
+from src.hollywoodos.plugins.base import BlinkenPlugin
 
 class PluginRegistry:
     """Central registry for all available plugins"""
@@ -29,10 +29,10 @@ class PluginRegistry:
         """Register built-in plugins"""
         # Import built-in plugins
         try:
-            from plugins.hex_scroll import HexScroll
-            from plugins.matrix_rain import MatrixRain
-            from plugins.system_monitor import SystemMonitor
-            from plugins.log_scroll import LogScroll
+            from src.hollywoodos.plugins.builtin.hex_scroll import HexScroll
+            from src.hollywoodos.plugins.builtin.matrix_rain import MatrixRain
+            from src.hollywoodos.plugins.builtin.system_monitor import SystemMonitor
+            from src.hollywoodos.plugins.builtin.log_scroll import LogScroll
             
             self.register("HexScroll", HexScroll)
             self.register("MatrixRain", MatrixRain)

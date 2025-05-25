@@ -1,7 +1,7 @@
 # plugins/log_scroll.py
 from textual.widgets import Static
 from textual.reactive import reactive
-from plugin_interface import BlinkenPlugin
+from src.hollywoodos.plugins.base import BlinkenPlugin
 import random
 import time
 
