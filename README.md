@@ -17,3 +17,10 @@ HollywoodOS is not meant to do anything useful. It is designed to look impressiv
 
 - Python 3.11 or later
 - A terminal that supports Textual
+
+## License
+
+HollywoodOS is licensed under the GNU Affero General Public License v3.0.
+
+You can use, modify, and redistribute it under the terms of that license.
+See the LICENSE file for the full license text.
