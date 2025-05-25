@@ -1,4 +1,4 @@
-# main.py
+# app.py
 from textual.app import App
 from textual.containers import Container
 from textual.widgets import Header, Footer
