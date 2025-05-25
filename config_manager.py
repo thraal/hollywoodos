@@ -1,94 +1,188 @@
+# config_manager.py
 import yaml
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, Any, Optional
+from dataclasses import dataclass, field
+
+@dataclass
+class PluginConfig:
+    type: str
+    config: Dict[str, Any] = field(default_factory=dict)
+    weight: float = 1.0
+
+@dataclass
+class WindowConfig:
+    id: str
+    plugins: list[PluginConfig] = field(default_factory=list)
+    cycle_interval: float = 0
+    min_size: tuple[int, int] = (10, 3)
+
+@dataclass
+class LayoutConfig:
+    initial_windows: int = 4
+    min_window_width: int = 20
+    min_window_height: int = 5
+    border_style: str = "solid"
+    focus_color: str = "$primary"
+    unfocus_color: str = "$surface-lighten-1"
 
 class ConfigManager:
     def __init__(self, config_path: str = "config.yaml"):
         self.config_path = Path(config_path)
-        self.config = self._load_config()
-    
-    def _load_config(self) -> Dict[str, Any]:
-        """Load configuration from YAML file"""
+        self._config = {}
+        self._layout = LayoutConfig()
+        self._windows = []
+        self._plugin_defaults = {}
+        self._global_defaults = {}
+        self.load()
+
+    def load(self):
+        """Load configuration from file"""
         if not self.config_path.exists():
-            return self._create_default_config()
+            self._create_default_config()
         
         try:
             with open(self.config_path, 'r') as f:
-                return yaml.safe_load(f)
+                self._config = yaml.safe_load(f) or {}
         except Exception as e:
             print(f"Error loading config: {e}")
-            return self._create_default_config()
-    
-    def _create_default_config(self) -> Dict[str, Any]:
+            self._create_default_config()
+        
+        self._parse_config()
+
+    def _parse_config(self):
+        """Parse configuration into structured objects"""
+        # Layout config
+        layout_data = self._config.get('layout', {})
+        self._layout = LayoutConfig(
+            initial_windows=layout_data.get('initial_windows', 4),
+            min_window_width=layout_data.get('min_window_width', 20),
+            min_window_height=layout_data.get('min_window_height', 5),
+            border_style=layout_data.get('border_style', 'solid'),
+            focus_color=layout_data.get('focus_color', '$primary'),
+            unfocus_color=layout_data.get('unfocus_color', '$surface-lighten-1')
+        )
+        
+        # Global defaults
+        self._global_defaults = self._config.get('defaults', {
+            'refresh_rate': 0.3,
+            'color_scheme': 'matrix',
+            'font': 'monospace'
+        })
+        
+        # Plugin defaults
+        self._plugin_defaults = self._config.get('plugin_defaults', {})
+        
+        # Window configs
+        self._windows = []
+        for window_data in self._config.get('windows', []):
+            plugins = []
+            for plugin_data in window_data.get('plugins', []):
+                plugins.append(PluginConfig(
+                    type=plugin_data.get('type', 'HexScroll'),
+                    config=plugin_data.get('config', {}),
+                    weight=plugin_data.get('weight', 1.0)
+                ))
+            
+            self._windows.append(WindowConfig(
+                id=window_data.get('id', 'window'),
+                plugins=plugins,
+                cycle_interval=window_data.get('cycle_interval', 0),
+                min_size=(
+                    window_data.get('min_width', 10),
+                    window_data.get('min_height', 3)
+                )
+            ))
+
+    def _create_default_config(self):
         """Create default configuration"""
         default = {
             'layout': {
-                'type': 'auto',
-                'grid_columns': 3,
-                'grid_rows': 3,
-                'padding': 1,
-                'gutter': 1
+                'initial_windows': 4,
+                'min_window_width': 20,
+                'min_window_height': 5,
+                'border_style': 'solid'
             },
             'defaults': {
                 'refresh_rate': 0.3,
-                'color': 'green',
-                'background': 'black',
-                'font_size': 'normal',
-                'border': True,
-                'border_color': 'gray',
-                'random_generation': True,
-                'source_file': None,
-                'height': 5
+                'color_scheme': 'matrix',
+                'font': 'monospace'
             },
-            'plugin_defaults': {},
+            'plugin_defaults': {
+                'HexScroll': {
+                    'refresh_rate': 0.2,
+                    'columns': 16
+                },
+                'MatrixRain': {
+                    'refresh_rate': 0.1,
+                    'density': 0.1
+                },
+                'SystemMonitor': {
+                    'refresh_rate': 1.0
+                },
+                'LogScroll': {
+                    'refresh_rate': 0.5
+                }
+            },
             'windows': [
                 {
-                    'id': 'default-window',
-                    'cycle_interval': 0,
+                    'id': 'main',
                     'plugins': [
-                        {
-                            'type': 'HexScroll',
-                            'config': {}
-                        }
+                        {'type': 'HexScroll', 'weight': 2.0},
+                        {'type': 'MatrixRain', 'weight': 1.0}
+                    ],
+                    'cycle_interval': 10.0
+                },
+                {
+                    'id': 'monitor',
+                    'plugins': [
+                        {'type': 'SystemMonitor'}
+                    ]
+                },
+                {
+                    'id': 'logs',
+                    'plugins': [
+                        {'type': 'LogScroll'}
+                    ]
+                },
+                {
+                    'id': 'data',
+                    'plugins': [
+                        {'type': 'HexScroll', 'config': {'color_scheme': 'amber'}}
                     ]
                 }
             ]
         }
         
-        # Save default config
-        self.save_config(default)
-        return default
-    
-    def save_config(self, config: Dict[str, Any] = None):
-        """Save configuration to YAML file"""
-        if config is None:
-            config = self.config
-        
         with open(self.config_path, 'w') as f:
-            yaml.dump(config, f, default_flow_style=False, indent=2)
-    
-    def reload_config(self):
+            yaml.dump(default, f, default_flow_style=False, indent=2)
+        
+        self._config = default
+
+    def reload(self):
         """Reload configuration from file"""
-        self.config = self._load_config()
-    
-    def get_layout_config(self) -> Dict[str, Any]:
-        """Get layout configuration"""
-        return self.config.get('layout', {})
-    
-    def get_window_configs(self) -> List[Dict[str, Any]]:
-        """Get all window configurations"""
-        return self.config.get('windows', [])
-    
-    def get_plugin_config(self, plugin_type: str, window_config: Dict[str, Any]) -> Dict[str, Any]:
-        """Get merged configuration for a specific plugin instance"""
-        # Start with global defaults
-        config = self.config.get('defaults', {}).copy()
-        
-        # Apply plugin type defaults
-        plugin_defaults = self.config.get('plugin_defaults', {}).get(plugin_type, {})
-        config.update(plugin_defaults)
-        
-        # Apply window-specific plugin config
-        config.update(window_config.get('config', {}))
-        
+        self.load()
+
+    def get_plugin_config(self, plugin_type: str, instance_config: Dict[str, Any]) -> Dict[str, Any]:
+        """Get merged configuration for a plugin instance"""
+        config = self._global_defaults.copy()
+        config.update(self._plugin_defaults.get(plugin_type, {}))
+        config.update(instance_config)
         return config
+
+    @property
+    def layout(self) -> LayoutConfig:
+        return self._layout
+
+    @property
+    def windows(self) -> list[WindowConfig]:
+        return self._windows
+
+    @property
+    def default_window_config(self) -> WindowConfig:
+        """Get a default window configuration"""
+        return WindowConfig(
+            id='default',
+            plugins=[PluginConfig(type='HexScroll')],
+            cycle_interval=0
+        )
