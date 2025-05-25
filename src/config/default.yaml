@@ -1,0 +1,39 @@
+defaults:
+  color_scheme: matrix
+  font: monospace
+  refresh_rate: 0.3
+layout:
+  border_style: solid
+  initial_windows: 4
+  min_window_height: 5
+  min_window_width: 20
+plugin_defaults:
+  HexScroll:
+    columns: 16
+    refresh_rate: 0.2
+  LogScroll:
+    refresh_rate: 0.5
+  MatrixRain:
+    density: 0.1
+    refresh_rate: 0.1
+  SystemMonitor:
+    refresh_rate: 1.0
+windows:
+- cycle_interval: 10.0
+  id: main
+  plugins:
+  - type: HexScroll
+    weight: 2.0
+  - type: MatrixRain
+    weight: 1.0
+- id: monitor
+  plugins:
+  - type: SystemMonitor
+- id: logs
+  plugins:
+  - type: LogScroll
+- id: data
+  plugins:
+  - config:
+      color_scheme: amber
+    type: HexScroll

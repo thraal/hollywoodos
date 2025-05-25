@@ -61,20 +61,25 @@ class HollywoodOS(App):
 
     def action_reload_config(self):
         self.config_manager.reload()
-        self.window_manager.reload_layout()
+        if self.window_manager is not None:
+            self.window_manager.reload_layout()
         self.notify("Configuration reloaded")
 
     def action_split_horizontal(self):
-        self.window_manager.split_focused_window(horizontal=True)
-
+        if self.window_manager is not None:
+            self.window_manager.split_focused_window(horizontal=True)
     def action_split_vertical(self):
-        self.window_manager.split_focused_window(horizontal=False)
+        if self.window_manager is not None:
+            self.window_manager.split_focused_window(horizontal=False)
 
     def action_close_window(self):
-        self.window_manager.close_focused_window()
+        if self.window_manager is not None:
+            self.window_manager.close_focused_window()
 
     def action_focus_next(self):
-        self.window_manager.focus_next_window()
+        if self.window_manager is not None:
+            self.window_manager.focus_next_window()
 
     def action_focus_previous(self):
-        self.window_manager.focus_previous_window()
+        if self.window_manager is not None:
+            self.window_manager.focus_previous_window()
