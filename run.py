@@ -11,7 +11,7 @@ src_path = Path(__file__).parent / "src"
 sys.path.insert(0, str(src_path))
 
 # Import and run the app
-from hollywoodos.app import HollywoodOS
+from src.hollywoodos.app import HollywoodOS
 
 if __name__ == "__main__":
     app = HollywoodOS()
