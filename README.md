@@ -1,6 +1,6 @@
 # HollywoodOS
 
-A retro-inspired terminal-based operating system simulation built with Textual and Python.
+A retro-inspired terminal-based cinematic computer activity simulator.
 
 ## Features
 
