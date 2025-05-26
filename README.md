@@ -8,8 +8,8 @@ A retro-inspired terminal-based cinematic computer activity simulator.
 
 - Modular plugin system: extend functionality with built-in and third-party plugins such as System Monitor and Log Scroller.
 - Themed interface: customizable color schemes and layouts defined in a CSS-like DSL.
-- Configurable: settings loaded from `config.yaml` and override via environment variables.
-- Cross-platform: tested on Linux and Windows.
+- Configurable: settings stored in yaml config file.
+- Cross-platform: Linux, Windows, macos.
 
 ## Installation
 
@@ -34,18 +34,4 @@ A retro-inspired terminal-based cinematic computer activity simulator.
 Run the application from the project root:
 ```bash
 python run.py
-```
-
-Refer to the Running guide for advanced options and troubleshooting.
-
-## Project Structure
-
-```
-hollywoodos/
-├── src/hollywoodos/     # Application source code
-├── docs/                # Documentation: usage, architecture, plugins
-├── README.md
-├── RUNNING.md           # Running instructions and flags
-├── requirements.txt
-└── config.yaml.example
 ```
