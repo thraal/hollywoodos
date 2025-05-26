@@ -9,7 +9,7 @@ A retro-inspired terminal-based cinematic computer activity simulator.
 - Modular plugin system: extend functionality with built-in and third-party plugins such as System Monitor and Log Scroller.
 - Themed interface: customizable color schemes and layouts defined in a CSS-like DSL.
 - Configurable: settings loaded from `config.yaml` and override via environment variables.
-- Cross-platform: tested on Windows, macOS, and Linux.
+- Cross-platform: tested on Linux and Windows.
 
 ## Installation
 
