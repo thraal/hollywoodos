@@ -2,6 +2,8 @@
 
 A retro-inspired terminal-based cinematic computer activity simulator.
 
+![alt text](<hollywoodos.gif>)
+
 ## Features
 
 - Modular plugin system: extend functionality with built-in and third-party plugins such as System Monitor and Log Scroller.
