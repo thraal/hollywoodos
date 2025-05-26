@@ -59,29 +59,26 @@ class WindowManager(Container):
             
             self.mount(row1, row2)
             
-            # Create two columns in each row
-            # Row 1, Column 1
+            # Row 1 - two columns
             r1c1 = self._create_tile(window_configs[0])
             r1c1.styles.width = "50%"
             r1c1.styles.height = "100%"
             r1c1.styles.dock = "left"
             
-            # Row 1, Column 2
             r1c2 = self._create_tile(window_configs[1])
-            r1c2.styles.width = "50%"
+            r1c2.styles.width = "100%"
             r1c2.styles.height = "100%"
             
             row1.mount(r1c1, r1c2)
             
-            # Row 2, Column 1
+            # Row 2 - two columns
             r2c1 = self._create_tile(window_configs[2])
             r2c1.styles.width = "50%"
             r2c1.styles.height = "100%"
             r2c1.styles.dock = "left"
             
-            # Row 2, Column 2
             r2c2 = self._create_tile(window_configs[3])
-            r2c2.styles.width = "50%"
+            r2c2.styles.width = "100%"
             r2c2.styles.height = "100%"
             
             row2.mount(r2c1, r2c2)
@@ -111,7 +108,7 @@ class WindowManager(Container):
             left.styles.height = "100%"
             left.styles.dock = "left"
             
-            right.styles.width = "50%"
+            right.styles.width = "100%"
             right.styles.height = "100%"
             
             self.mount(left, right)
@@ -125,7 +122,7 @@ class WindowManager(Container):
             left.styles.dock = "left"
             
             right_container = Container()
-            right_container.styles.width = "50%"
+            right_container.styles.width = "100%"
             right_container.styles.height = "100%"
             
             self.mount(left, right_container)
@@ -182,7 +179,7 @@ class WindowManager(Container):
             left.styles.height = "100%"
             left.styles.dock = "left"
             
-            right.styles.width = "50%"
+            right.styles.width = "100%"
             right.styles.height = "100%"
             
             container.mount(left, right)

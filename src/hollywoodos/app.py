@@ -17,6 +17,8 @@ class HollywoodOS(App):
     TileWindow {
         background: $surface;
         overflow: hidden;
+        width: 100%;
+        height: 100%;
     }
     
     TileWindow.focused {
