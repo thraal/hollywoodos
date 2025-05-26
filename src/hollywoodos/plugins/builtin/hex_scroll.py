@@ -21,17 +21,16 @@ class HexScrollWidget(Static):
         
         # Initialize lines
         self.line_count = 0
-        self.column_count = self.config.get('columns', 16)
+        self.column_count = 16  # default
         self.lines = []
         
     def on_mount(self):
         """Start scrolling when mounted"""
         # Calculate how many lines we can fit
         self.line_count = self.size.height
-        # Each hex value takes 3 characters (2 hex + 1 space), but last doesn't need space
-        # So for width W, we can fit (W + 1) / 3 values
-        max_columns = (self.size.width + 1) // 3
-        self.column_count = max_columns if max_columns > 0 else 1
+        # Each hex value takes 3 characters (2 hex + 1 space)
+        # Last value doesn't need trailing space, so we can fit (width + 1) / 3 values
+        self.column_count = max(1, self.size.width // 3)
         
         # Initialize with random data
         self.lines = [self._generate_hex_line() for _ in range(self.line_count)]
@@ -43,16 +42,14 @@ class HexScrollWidget(Static):
     def on_resize(self):
         """Handle resize events"""
         new_line_count = self.size.height
-        new_column_count = min(self.config.get('columns', 16), self.size.width // 3)
+        new_column_count = max(1, self.size.width // 3)
         
         if new_line_count != self.line_count or new_column_count != self.column_count:
             self.line_count = new_line_count
             self.column_count = new_column_count
             
-            # Adjust lines
-            while len(self.lines) < self.line_count:
-                self.lines.append(self._generate_hex_line())
-            self.lines = self.lines[:self.line_count]
+            # Regenerate all lines with new width
+            self.lines = [self._generate_hex_line() for _ in range(self.line_count)]
             
     def _generate_hex_line(self) -> str:
         """Generate a line of hex values"""

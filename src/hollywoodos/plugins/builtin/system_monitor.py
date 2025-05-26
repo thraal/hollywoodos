@@ -36,6 +36,9 @@ class SystemMonitorWidget(Static):
             "load_avg": [random.uniform(0, 4), random.uniform(0, 4), random.uniform(0, 4)],
             "swap": random.randint(0, 100),
             "temp": random.randint(30, 80),
+            "cache": random.randint(0, 100),
+            "buffers": random.randint(0, 100),
+            "kernel": random.randint(0, 100),
         }
 
     def _update(self) -> None:
@@ -43,7 +46,7 @@ class SystemMonitorWidget(Static):
         old = self.stats.copy()
         
         # CPU and memory change gradually
-        for key in ["cpu", "memory", "swap"]:
+        for key in ["cpu", "memory", "swap", "cache", "buffers", "kernel"]:
             change = random.randint(-10, 10)
             self.stats[key] = max(0, min(100, old[key] + change))
             
@@ -76,78 +79,80 @@ class SystemMonitorWidget(Static):
         width = self.size.width
         height = self.size.height
         
-        if width < 30 or height < 10:
-            return "Window too small"
-            
         # Calculate dynamic widths
-        bar_width = max(10, min(40, width - 30))
-        value_width = 6
+        bar_width = max(10, min(40, width - 20))
         
         uptime = int(time.time() - self.start_time)
         hours = uptime // 3600
         minutes = (uptime % 3600) // 60
         seconds = uptime % 60
         
-        # Build lines
-        lines = []
+        # Build lines - we'll display as many as fit
+        all_lines = []
         
         # Title
-        title = "SYSTEM MONITOR"
-        lines.append(title.center(width))
-        lines.append("━" * width)
-        lines.append("")
+        if width >= 14:
+            title = "SYSTEM MONITOR"
+            all_lines.append(title.center(width))
+            all_lines.append("━" * width)
         
         # CPU bar
-        cpu_bar = self._make_bar(self.stats['cpu'], bar_width)
-        lines.append(f"CPU:      {self.stats['cpu']:>3d}% {cpu_bar}")
+        if width >= 20:
+            cpu_bar = self._make_bar(self.stats['cpu'], bar_width)
+            all_lines.append(f"CPU:      {self.stats['cpu']:>3d}% {cpu_bar}")
         
         # Memory bar
-        mem_bar = self._make_bar(self.stats['memory'], bar_width)
-        lines.append(f"Memory:   {self.stats['memory']:>3d}% {mem_bar}")
+        if width >= 20:
+            mem_bar = self._make_bar(self.stats['memory'], bar_width)
+            all_lines.append(f"Memory:   {self.stats['memory']:>3d}% {mem_bar}")
         
         # Swap bar
-        swap_bar = self._make_bar(self.stats['swap'], bar_width)
-        lines.append(f"Swap:     {self.stats['swap']:>3d}% {swap_bar}")
+        if width >= 20:
+            swap_bar = self._make_bar(self.stats['swap'], bar_width)
+            all_lines.append(f"Swap:     {self.stats['swap']:>3d}% {swap_bar}")
         
-        lines.append("")
+        # Cache bar
+        if width >= 20:
+            cache_bar = self._make_bar(self.stats['cache'], bar_width)
+            all_lines.append(f"Cache:    {self.stats['cache']:>3d}% {cache_bar}")
+        
+        # Kernel bar
+        if width >= 20:
+            kernel_bar = self._make_bar(self.stats['kernel'], bar_width)
+            all_lines.append(f"Kernel:   {self.stats['kernel']:>3d}% {kernel_bar}")
         
         # Load average
-        load = self.stats['load_avg']
-        lines.append(f"Load Average: {load[0]:.2f}, {load[1]:.2f}, {load[2]:.2f}")
+        if width >= 30:
+            load = self.stats['load_avg']
+            all_lines.append(f"Load: {load[0]:.2f}, {load[1]:.2f}, {load[2]:.2f}")
         
         # Temperature
-        lines.append(f"CPU Temp: {self.stats['temp']}°C")
+        if width >= 15:
+            all_lines.append(f"CPU Temp: {self.stats['temp']}°C")
         
-        lines.append("")
+        # Network
+        if width >= 25:
+            all_lines.append(f"Net RX: {self._format_bytes(self.stats['network_rx'])}/s")
+            all_lines.append(f"Net TX: {self._format_bytes(self.stats['network_tx'])}/s")
         
-        # Network (adaptive formatting)
-        if width > 50:
-            lines.append(f"Network RX: {self._format_bytes(self.stats['network_rx'])}/s    "
-                        f"TX: {self._format_bytes(self.stats['network_tx'])}/s")
-            lines.append(f"Disk Read:  {self._format_bytes(self.stats['disk_read'])}/s    "
-                        f"Write: {self._format_bytes(self.stats['disk_write'])}/s")
-        else:
-            lines.append(f"Net RX: {self._format_bytes(self.stats['network_rx'])}/s")
-            lines.append(f"Net TX: {self._format_bytes(self.stats['network_tx'])}/s")
-            lines.append(f"Disk R: {self._format_bytes(self.stats['disk_read'])}/s")
-            lines.append(f"Disk W: {self._format_bytes(self.stats['disk_write'])}/s")
-        
-        lines.append("")
+        # Disk
+        if width >= 25:
+            all_lines.append(f"Disk R: {self._format_bytes(self.stats['disk_read'])}/s")
+            all_lines.append(f"Disk W: {self._format_bytes(self.stats['disk_write'])}/s")
         
         # Process info
-        lines.append(f"Processes: {self.stats['processes']:>4}    Threads: {self.stats['threads']:>4}")
+        if width >= 30:
+            all_lines.append(f"Procs: {self.stats['processes']}  Threads: {self.stats['threads']}")
         
         # Uptime
-        lines.append(f"Uptime: {hours:02d}:{minutes:02d}:{seconds:02d}")
+        if width >= 20:
+            all_lines.append(f"Up: {hours:02d}:{minutes:02d}:{seconds:02d}")
         
-        # Fill remaining space if needed
-        while len(lines) < height - 1:
-            lines.append("")
+        # Return only lines that fit in height
+        if not all_lines:
+            return ""
             
-        # Trim if too many lines
-        lines = lines[:height]
-        
-        return '\n'.join(lines)
+        return '\n'.join(all_lines[:height])
     
     def _make_bar(self, percentage: int, width: int) -> str:
         """Create a progress bar"""
