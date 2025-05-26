@@ -1,9 +1,6 @@
 # window_manager.py
-from textual.widget import Widget
 from textual.containers import Container
-from textual.reactive import reactive
-from textual.geometry import Size, Region
-from typing import Optional, List
+from typing import List
 from .tile_window import TileWindow
 from .config_manager import ConfigManager, WindowConfig
 from ..plugins.registry import PluginRegistry
@@ -49,37 +46,23 @@ class WindowManager(Container):
             # Create two rows
             row1 = Container()
             row2 = Container()
-            
-            row1.styles.width = "100%"
-            row1.styles.height = "50%"
-            row1.styles.dock = "top"
-            
-            row2.styles.width = "100%"
-            row2.styles.height = "50%"
-            
             self.mount(row1, row2)
-            
+
             # Row 1 - two columns
             r1c1 = self._create_tile(window_configs[0])
             r1c1.styles.width = "50%"
-            r1c1.styles.height = "100%"
             r1c1.styles.dock = "left"
             
             r1c2 = self._create_tile(window_configs[1])
-            r1c2.styles.width = "100%"
-            r1c2.styles.height = "100%"
             
             row1.mount(r1c1, r1c2)
             
             # Row 2 - two columns
             r2c1 = self._create_tile(window_configs[2])
             r2c1.styles.width = "50%"
-            r2c1.styles.height = "100%"
             r2c1.styles.dock = "left"
             
             r2c2 = self._create_tile(window_configs[3])
-            r2c2.styles.width = "100%"
-            r2c2.styles.height = "100%"
             
             row2.mount(r2c1, r2c2)
         else:
@@ -274,3 +257,4 @@ class WindowManager(Container):
         
         self.tiles[self.focused_index].remove_class("unfocused")
         self.tiles[self.focused_index].add_class("focused")
+        
