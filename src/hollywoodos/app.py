@@ -1,50 +1,34 @@
 # app.py
 from textual.app import App
-from textual.containers import Container
-from textual.widgets import Header, Footer
-from textual.binding import Binding
-from textual.geometry import Size
+
 from .core.config_manager import ConfigManager
 from .core.window_manager import WindowManager
 from .plugins.registry import PluginRegistry
 
 class HollywoodOS(App):
     CSS = """
+    /* Ensure the WindowManager occupies the full terminal area */
     WindowManager {
-        dock: none;
+        width: 100%;
+        height: 100%;
     }
-    
+
+    /* Style each tile with a visible border */
     TileWindow {
         background: $surface;
         overflow: hidden;
         width: 100%;
         height: 100%;
-    }
-    
-    TileWindow.focused {
-        border: solid $primary;
-    }
-    
-    TileWindow.unfocused {
         border: solid $surface-lighten-1;
     }
-    
+
+    /* Plugin widgets fill their tile container */
     .plugin-widget {
         width: 100%;
         height: 100%;
         overflow: hidden;
     }
     """
-    
-    BINDINGS = [
-        Binding("r", "reload_config", "Reload"),
-        Binding("q", "quit", "Quit"),
-        Binding("tab", "focus_next", "Next Window"),
-        Binding("shift+tab", "focus_previous", "Previous Window"),
-        Binding("h", "split_horizontal", "Split Horizontal"),
-        Binding("v", "split_vertical", "Split Vertical"),
-        Binding("x", "close_window", "Close Window"),
-    ]
 
     def __init__(self):
         super().__init__()
@@ -53,13 +37,12 @@ class HollywoodOS(App):
         self.window_manager = None
 
     def compose(self):
-        yield Header()
+        # Mount the WindowManager so it fills all available space
         self.window_manager = WindowManager(
             self.config_manager,
             self.plugin_registry
         )
         yield self.window_manager
-        yield Footer()
 
     def action_reload_config(self):
         self.config_manager.reload()
@@ -70,6 +53,7 @@ class HollywoodOS(App):
     def action_split_horizontal(self):
         if self.window_manager is not None:
             self.window_manager.split_focused_window(horizontal=True)
+
     def action_split_vertical(self):
         if self.window_manager is not None:
             self.window_manager.split_focused_window(horizontal=False)
@@ -77,11 +61,3 @@ class HollywoodOS(App):
     def action_close_window(self):
         if self.window_manager is not None:
             self.window_manager.close_focused_window()
-
-    def action_focus_next(self):
-        if self.window_manager is not None:
-            self.window_manager.focus_next_window()
-
-    def action_focus_previous(self):
-        if self.window_manager is not None:
-            self.window_manager.focus_previous_window()
