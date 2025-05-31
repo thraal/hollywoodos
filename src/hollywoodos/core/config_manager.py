@@ -19,9 +19,7 @@ class WindowConfig:
 
 @dataclass
 class LayoutConfig:
-    initial_windows: int = 4
-    min_window_width: int = 20
-    min_window_height: int = 5
+    layout_type: str = "2x2"  # single, 2x2, 2x2_big, 3x3
     border_style: str = "solid"
     focus_color: str = "$primary"
     unfocus_color: str = "$surface-lighten-1"
@@ -67,9 +65,7 @@ class ConfigManager:
         # Layout config
         layout_data = self._config.get('layout', {})
         self._layout = LayoutConfig(
-            initial_windows=layout_data.get('initial_windows', 4),
-            min_window_width=layout_data.get('min_window_width', 20),
-            min_window_height=layout_data.get('min_window_height', 5),
+            layout_type=layout_data.get('layout_type', '2x2'),
             border_style=layout_data.get('border_style', 'solid'),
             focus_color=layout_data.get('focus_color', '$primary'),
             unfocus_color=layout_data.get('unfocus_color', '$surface-lighten-1')
@@ -110,9 +106,7 @@ class ConfigManager:
         """Create default configuration"""
         default = {
             'layout': {
-                'initial_windows': 4,
-                'min_window_width': 20,
-                'min_window_height': 5,
+                'layout_type': '2x2',  # single, 2x2, 2x2_big, 3x3
                 'border_style': 'solid'
             },
             'defaults': {

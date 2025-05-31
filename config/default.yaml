@@ -3,10 +3,8 @@ defaults:
   font: monospace
   refresh_rate: 0.3
 layout:
+  layout_type: 2x2  # Options: single, 2x2, 2x2_big, 3x3
   border_style: solid
-  initial_windows: 4
-  min_window_height: 5
-  min_window_width: 20
 plugin_defaults:
   HexScroll:
     columns: 16
@@ -37,3 +35,19 @@ windows:
   - config:
       color_scheme: amber
     type: HexScroll
+# Additional windows for 3x3 layout (will be ignored in smaller layouts)
+- id: extra1
+  plugins:
+  - type: MatrixRain
+- id: extra2
+  plugins:
+  - type: HexScroll
+- id: extra3
+  plugins:
+  - type: SystemMonitor
+- id: extra4
+  plugins:
+  - type: LogScroll
+- id: extra5
+  plugins:
+  - type: HexScroll

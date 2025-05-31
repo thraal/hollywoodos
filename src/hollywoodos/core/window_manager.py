@@ -6,7 +6,7 @@ from .config_manager import ConfigManager, WindowConfig
 from ..plugins.registry import PluginRegistry
 
 class WindowManager(Container):
-    """Manages tiled windows with smart splitting algorithm"""
+    """Manages tiled windows with predefined layouts"""
     
     def __init__(self, config_manager: ConfigManager, plugin_registry: PluginRegistry):
         super().__init__()
@@ -26,166 +26,155 @@ class WindowManager(Container):
             tile.remove()
         self.tiles.clear()
         
-        # Create initial layout
-        self._create_initial_layout()
+        # Create layout based on type
+        layout_type = self.config_manager.layout.layout_type
         
-    def _create_initial_layout(self):
-        """Create initial window layout"""
-        layout = self.config_manager.layout
-        window_configs = self.config_manager.windows
-        
-        # If no windows configured, create default
-        if not window_configs:
-            window_configs = [
-                self.config_manager.default_window_config 
-                for _ in range(layout.initial_windows)
-            ]
-        
-        # Create tiles in a 2x2 grid for 4 windows
-        if len(window_configs) == 4:
-            # Create two rows
-            row1 = Container()
-            row2 = Container()
-            self.mount(row1, row2)
-
-            # Row 1 - two columns
-            r1c1 = self._create_tile(window_configs[0])
-            r1c1.styles.width = "50%"
-            r1c1.styles.dock = "left"
-            
-            r1c2 = self._create_tile(window_configs[1])
-            
-            row1.mount(r1c1, r1c2)
-            
-            # Row 2 - two columns
-            r2c1 = self._create_tile(window_configs[2])
-            r2c1.styles.width = "50%"
-            r2c1.styles.dock = "left"
-            
-            r2c2 = self._create_tile(window_configs[3])
-            
-            row2.mount(r2c1, r2c2)
+        if layout_type == "single":
+            self._create_single_layout()
+        elif layout_type == "2x2":
+            self._create_2x2_layout()
+        elif layout_type == "2x2_big":
+            self._create_2x2_big_layout()
+        elif layout_type == "3x3":
+            self._create_3x3_layout()
         else:
-            # For other counts, use recursive splitting
-            self._create_tiles_balanced(window_configs)
+            # Default to 2x2
+            self._create_2x2_layout()
             
-    def _create_tiles_balanced(self, window_configs: List[WindowConfig]):
-        """Create tiles using balanced binary splitting"""
-        if not window_configs:
-            return
-            
-        # For 1 window, use full space
-        if len(window_configs) == 1:
-            tile = self._create_tile(window_configs[0])
-            tile.styles.width = "100%"
-            tile.styles.height = "100%"
-            self.mount(tile)
-            return
-            
-        # For 2 windows, split vertically (side by side)
-        if len(window_configs) == 2:
-            left = self._create_tile(window_configs[0])
-            right = self._create_tile(window_configs[1])
-            
-            left.styles.width = "50%"
-            left.styles.height = "100%"
-            left.styles.dock = "left"
-            
-            right.styles.width = "100%"
-            right.styles.height = "100%"
-            
-            self.mount(left, right)
-            return
-            
-        # For 3 windows, one big on left, two small on right
-        if len(window_configs) == 3:
-            left = self._create_tile(window_configs[0])
-            left.styles.width = "50%"
-            left.styles.height = "100%"
-            left.styles.dock = "left"
-            
-            right_container = Container()
-            right_container.styles.width = "100%"
-            right_container.styles.height = "100%"
-            
-            self.mount(left, right_container)
-            
-            # Split right container horizontally
-            top_right = self._create_tile(window_configs[1])
-            bottom_right = self._create_tile(window_configs[2])
-            
-            top_right.styles.width = "100%"
-            top_right.styles.height = "50%"
-            top_right.styles.dock = "top"
-            
-            bottom_right.styles.width = "100%"
-            bottom_right.styles.height = "50%"
-            
-            right_container.mount(top_right, bottom_right)
-            return
-            
-        # For more windows, split recursively
-        mid = len(window_configs) // 2
-        left_configs = window_configs[:mid]
-        right_configs = window_configs[mid:]
+    def _get_window_configs(self, count: int) -> List[WindowConfig]:
+        """Get window configs, padding with defaults if needed"""
+        configs = self.config_manager.windows[:count]
         
-        # Create containers
+        # Pad with defaults if not enough configs
+        while len(configs) < count:
+            configs.append(self.config_manager.default_window_config)
+            
+        return configs
+        
+    def _create_single_layout(self):
+        """Create a single full-screen window"""
+        configs = self._get_window_configs(1)
+        tile = self._create_tile(configs[0])
+        self.mount(tile)
+        
+    def _create_2x2_layout(self):
+        """Create a 2x2 grid of equal-sized windows"""
+        configs = self._get_window_configs(4)
+        
+        # Create two rows
+        row1 = Container()
+        row2 = Container()
+        row1.styles.height = "50%"
+        row1.styles.dock = "top"
+        row2.styles.height = "100%"
+        
+        self.mount(row1, row2)
+        
+        # Row 1 - two columns
+        tile0 = self._create_tile(configs[0])
+        tile0.styles.width = "50%"
+        tile0.styles.dock = "left"
+        
+        tile1 = self._create_tile(configs[1])
+        
+        row1.mount(tile0, tile1)
+        
+        # Row 2 - two columns
+        tile2 = self._create_tile(configs[2])
+        tile2.styles.width = "50%"
+        tile2.styles.dock = "left"
+        
+        tile3 = self._create_tile(configs[3])
+        
+        row2.mount(tile2, tile3)
+        
+    def _create_2x2_big_layout(self):
+        """Create 2x2 with big window top right
+        Layout:
+        +-----+----------+
+        | 0   |    1     |
+        +-----+   (big)  |
+        | 2   |          |
+        +-----+----------+
+        |       3        |
+        +----------------+
+        """
+        configs = self._get_window_configs(4)
+        
+        # Top container (66% height)
         top_container = Container()
-        bottom_container = Container()
-        
-        top_container.styles.width = "100%"
-        top_container.styles.height = "50%"
+        top_container.styles.height = "66%"
         top_container.styles.dock = "top"
         
-        bottom_container.styles.width = "100%"
-        bottom_container.styles.height = "50%"
+        # Bottom container (remaining height)
+        bottom_container = Container()
         
         self.mount(top_container, bottom_container)
         
-        # Recursively create tiles
-        self._create_tiles_in_container(top_container, left_configs)
-        self._create_tiles_in_container(bottom_container, right_configs)
+        # Left column in top container (33% width)
+        left_column = Container()
+        left_column.styles.width = "33%"
+        left_column.styles.dock = "left"
+        
+        top_container.mount(left_column)
+        
+        # Split left column into two windows
+        tile0 = self._create_tile(configs[0])
+        tile0.styles.height = "50%"
+        tile0.styles.dock = "top"
+        
+        tile2 = self._create_tile(configs[2])
+        
+        left_column.mount(tile0, tile2)
+        
+        # Big window (remaining space in top container)
+        tile1 = self._create_tile(configs[1])
+        top_container.mount(tile1)
+        
+        # Bottom full-width window
+        tile3 = self._create_tile(configs[3])
+        bottom_container.mount(tile3)
+        
+    def _create_3x3_layout(self):
+        """Create a 3x3 grid of equal-sized windows"""
+        configs = self._get_window_configs(9)
+        
+        # Create three rows
+        row1 = Container()
+        row2 = Container()
+        row3 = Container()
+        
+        row1.styles.height = "33.33%"
+        row1.styles.dock = "top"
+        row2.styles.height = "50%"
+        row2.styles.dock = "top"
+        row3.styles.height = "100%"
+        
+        self.mount(row1, row2, row3)
+        
+        # Row 1 - three columns
+        for i in range(3):
+            tile = self._create_tile(configs[i])
+            if i < 2:
+                tile.styles.width = "33.33%"
+                tile.styles.dock = "left"
+            row1.mount(tile)
             
-    def _create_tiles_in_container(self, container: Container, window_configs: List[WindowConfig]):
-        """Create tiles within a specific container"""
-        if len(window_configs) == 1:
-            tile = self._create_tile(window_configs[0])
-            tile.styles.width = "100%"
-            tile.styles.height = "100%"
-            container.mount(tile)
-        elif len(window_configs) == 2:
-            # For 2 windows, always split vertically (side by side)
-            left = self._create_tile(window_configs[0])
-            right = self._create_tile(window_configs[1])
+        # Row 2 - three columns
+        for i in range(3, 6):
+            tile = self._create_tile(configs[i])
+            if i < 5:
+                tile.styles.width = "33.33%"
+                tile.styles.dock = "left"
+            row2.mount(tile)
             
-            left.styles.width = "50%"
-            left.styles.height = "100%"
-            left.styles.dock = "left"
-            
-            right.styles.width = "100%"
-            right.styles.height = "100%"
-            
-            container.mount(left, right)
-        else:
-            # For > 2, split horizontally
-            mid = len(window_configs) // 2
-            left_configs = window_configs[:mid]
-            right_configs = window_configs[mid:]
-            
-            top_sub = Container()
-            bottom_sub = Container()
-            
-            top_sub.styles.width = "100%"
-            top_sub.styles.height = "50%"
-            top_sub.styles.dock = "top"
-            
-            bottom_sub.styles.width = "100%"
-            bottom_sub.styles.height = "50%"
-            
-            container.mount(top_sub, bottom_sub)
-            
-            self._create_tiles_in_container(top_sub, left_configs)
-            self._create_tiles_in_container(bottom_sub, right_configs)
+        # Row 3 - three columns
+        for i in range(6, 9):
+            tile = self._create_tile(configs[i])
+            if i < 8:
+                tile.styles.width = "33.33%"
+                tile.styles.dock = "left"
+            row3.mount(tile)
     
     def _create_tile(self, window_config: WindowConfig) -> TileWindow:
         """Create a single tile window"""
@@ -206,31 +195,12 @@ class WindowManager(Container):
         return tile
         
     def split_focused_window(self, horizontal: bool = True):
-        """Split the currently focused window"""
-        if not self.tiles or self.focused_index >= len(self.tiles):
-            return
-            
-        focused_tile = self.tiles[self.focused_index]
-        
-        # Create new tile with same config
-        new_config = WindowConfig(
-            id=f"{focused_tile.window_config.id}_split",
-            plugins=focused_tile.window_config.plugins.copy(),
-            cycle_interval=focused_tile.window_config.cycle_interval
-        )
-        
-        # This would require more complex layout management
-        # For now, just notify
-        self.notify("Window splitting not yet implemented in this version")
+        """Not supported with fixed layouts"""
+        self.app.notify("Window splitting is not available with fixed layouts")
         
     def close_focused_window(self):
-        """Close the currently focused window"""
-        if len(self.tiles) <= 1:
-            self.notify("Cannot close last window")
-            return
-            
-        # Would need to implement proper window closing
-        self.notify("Window closing not yet implemented")
+        """Not supported with fixed layouts"""
+        self.app.notify("Window closing is not available with fixed layouts")
         
     def focus_next_window(self):
         """Focus the next window"""
@@ -257,4 +227,3 @@ class WindowManager(Container):
         
         self.tiles[self.focused_index].remove_class("unfocused")
         self.tiles[self.focused_index].add_class("focused")
-        

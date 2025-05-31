@@ -50,14 +50,30 @@ class HollywoodOS(App):
             self.window_manager.reload_layout()
         self.notify("Configuration reloaded")
 
-    def action_split_horizontal(self):
-        if self.window_manager is not None:
-            self.window_manager.split_focused_window(horizontal=True)
-
-    def action_split_vertical(self):
-        if self.window_manager is not None:
-            self.window_manager.split_focused_window(horizontal=False)
-
-    def action_close_window(self):
-        if self.window_manager is not None:
-            self.window_manager.close_focused_window()
+    # Note: split_horizontal, split_vertical, and close_window actions 
+    # have been removed as they are not supported with fixed layouts
+    
+    # You could add new actions for switching layouts:
+    def action_layout_single(self):
+        """Switch to single window layout"""
+        self.config_manager._layout.layout_type = "single"
+        self.window_manager.reload_layout()
+        self.notify("Switched to single window layout")
+        
+    def action_layout_2x2(self):
+        """Switch to 2x2 grid layout"""
+        self.config_manager._layout.layout_type = "2x2"
+        self.window_manager.reload_layout()
+        self.notify("Switched to 2x2 grid layout")
+        
+    def action_layout_2x2_big(self):
+        """Switch to 2x2 big window layout"""
+        self.config_manager._layout.layout_type = "2x2_big"
+        self.window_manager.reload_layout()
+        self.notify("Switched to 2x2 big window layout")
+        
+    def action_layout_3x3(self):
+        """Switch to 3x3 grid layout"""
+        self.config_manager._layout.layout_type = "3x3"
+        self.window_manager.reload_layout()
+        self.notify("Switched to 3x3 grid layout")
