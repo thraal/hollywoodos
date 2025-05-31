@@ -128,16 +128,18 @@ class ConfigManager:
                 },
                 'LogScroll': {
                     'refresh_rate': 0.5
+                },
+                'TacticalMap': {
+                    'target_interval': 5.0,
+                    'num_coordinates': 3
                 }
             },
             'windows': [
                 {
-                    'id': 'main',
+                    'id': 'map',
                     'plugins': [
-                        {'type': 'HexScroll', 'weight': 2.0},
-                        {'type': 'MatrixRain', 'weight': 1.0}
-                    ],
-                    'cycle_interval': 10.0
+                        {'type': 'TacticalMap'}
+                    ]
                 },
                 {
                     'id': 'monitor',

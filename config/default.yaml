@@ -16,14 +16,16 @@ plugin_defaults:
     refresh_rate: 0.1
   SystemMonitor:
     refresh_rate: 1.0
+  TacticalMap:
+    target_interval: 5.0
+    num_coordinates: 3
 windows:
-- cycle_interval: 10.0
-  id: main
+- id: map
   plugins:
-  - type: HexScroll
-    weight: 2.0
-  - type: MatrixRain
-    weight: 1.0
+  - type: TacticalMap
+    config:
+      target_interval: 5.0
+      num_coordinates: 3
 - id: monitor
   plugins:
   - type: SystemMonitor

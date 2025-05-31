@@ -35,12 +35,14 @@ class PluginRegistry:
             from .builtin.system_monitor import SystemMonitor
             from .builtin.log_scroll import LogScroll
             from .builtin.network_monitor import NetworkMonitor
+            from .builtin.tactical_map import TacticalMap
             
             self.register("HexScroll", HexScroll)
             self.register("MatrixRain", MatrixRain)
             self.register("SystemMonitor", SystemMonitor)
             self.register("LogScroll", LogScroll)
             self.register("NetworkMonitor", NetworkMonitor)
+            self.register("TacticalMap", TacticalMap)
         except ImportError:
             pass
             
