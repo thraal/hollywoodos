@@ -57,23 +57,27 @@ class HollywoodOS(App):
     def action_layout_single(self):
         """Switch to single window layout"""
         self.config_manager._layout.layout_type = "single"
-        self.window_manager.reload_layout()
+        if self.window_manager is not None:
+            self.window_manager.reload_layout()
         self.notify("Switched to single window layout")
         
     def action_layout_2x2(self):
         """Switch to 2x2 grid layout"""
         self.config_manager._layout.layout_type = "2x2"
-        self.window_manager.reload_layout()
+        if self.window_manager is not None:
+            self.window_manager.reload_layout()
         self.notify("Switched to 2x2 grid layout")
         
     def action_layout_2x2_big(self):
         """Switch to 2x2 big window layout"""
         self.config_manager._layout.layout_type = "2x2_big"
-        self.window_manager.reload_layout()
+        if self.window_manager is not None:
+            self.window_manager.reload_layout()
         self.notify("Switched to 2x2 big window layout")
         
     def action_layout_3x3(self):
         """Switch to 3x3 grid layout"""
         self.config_manager._layout.layout_type = "3x3"
-        self.window_manager.reload_layout()
+        if self.window_manager is not None:
+            self.window_manager.reload_layout()
         self.notify("Switched to 3x3 grid layout")
